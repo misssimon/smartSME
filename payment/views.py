@@ -15,7 +15,7 @@ MPESA_CONSUMER_KEY = '8hYi846dzPSqBKAC3ZbEqkkJzOQFx95xnQLqIg6b2sL2thb0'
 MPESA_CONSUMER_SECRET = 'STITyxyFUIXAnCIVrRRueWnKV5wk3rZsfhxozk5wQzhoCwSAvBYLsPukttzvsPBh'
 MPESA_SHORTCODE = '5515738'
 MPESA_PASSKEY = '4cbd2d6babc8827c7ab0a433c7ec754b7b945a7a71aca5277db0a024f160b462'
-MPESA_CALLBACK_URL = 'https://localhost:8000/payment/mpesa-callback/'
+MPESA_CALLBACK_URL = 'https://smartsme.onrender.comS/payment/mpesa-callback/'
 
 
 def get_mpesa_access_token():
