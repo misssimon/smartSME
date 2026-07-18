@@ -47,6 +47,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware'
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -124,18 +125,19 @@ USE_TZ = True
 # =============================================================================
 # STATIC FILES
 # =============================================================================
-STATIC_URL = 'static/'
+# ====================== STATIC FILES (Production Ready) ======================
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+# For development + production
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
 
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+# Optional: Use WhiteNoise for better static file serving on Render
+# Add 'whitenoise.middleware.WhiteNoiseMiddleware' in MIDDLEWARE after SecurityMiddleware
 
-
-# =============================================================================
-# MEDIA FILES (For Product Images - Very Important!)
-# =============================================================================
+# ====================== MEDIA FILES ======================
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
