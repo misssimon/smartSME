@@ -1,0 +1,19 @@
+version: 1
+
+services:
+  - type: web
+    name: smartsme-shopease
+    env: python
+    plan: free
+    rootDirectory: smartSME/smartSME
+    buildCommand: pip install -r requirements.txt && python manage.py makemigrations --noinput && python manage.py migrate --noinput
+    startCommand: gunicorn smartSME.wsgi:application
+    envVars:
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: "*"
+      - key: PYTHON_VERSION
+        value: "3.11.0"
