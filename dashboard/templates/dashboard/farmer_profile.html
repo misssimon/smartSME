@@ -1,0 +1,187 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - smartSME</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        :root {
+            --primary: #007bff;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(-45deg, #d9e8ff, #f0faff, #e0f7ff, #c9ecff);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .form-container {
+            max-width: 620px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            padding: 40px 30px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 35px;
+            font-size: 1.8rem;
+        }
+
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.98rem;
+        }
+
+        input[type="text"],
+        input[type="tel"],
+        input[type="email"],
+        textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border 0.3s;
+        }
+
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .current-image {
+            margin-top: 10px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .current-image img {
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #fff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            padding: 16px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 576px) {
+            body {
+                padding: 15px 10px;
+            }
+            
+            .form-container {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 1.65rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .form-container {
+                padding: 25px 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1><i class="fas fa-user-edit"></i> My Farmer Profile</h1>
+       
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+           
+            <div class="form-group">
+                <label>Farm Name</label>
+                <input type="text" name="farm_name" value="{{ profile.farm_name|default:'' }}" placeholder="e.g. Green Valley Farm">
+            </div>
+
+            <div class="form-group">
+                <label>Phone Number</label>
+                <input type="tel" name="phone" value="{{ profile.phone|default:'' }}" placeholder="+254 700 123 456">
+            </div>
+
+            <div class="form-group">
+                <label>Location (County / Town)</label>
+                <input type="text" name="location" value="{{ profile.location|default:'' }}" placeholder="e.g. Kiambu, Ruiru">
+            </div>
+
+            <div class="form-group">
+                <label>About Your Farm</label>
+                <textarea name="description" rows="5" placeholder="Tell buyers about your farm, farming practices, specialties...">{{ profile.description|default:'' }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Profile Picture</label>
+                <input type="file" name="profile_picture" accept="image/*">
+                
+                {% if profile.profile_picture %}
+                    <div class="current-image">
+                        <p style="margin: 8px 0 12px; color: #555;">Current Profile Picture:</p>
+                        <img src="{{ profile.profile_picture.url }}" width="110" height="110" alt="Current Profile">
+                    </div>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="btn">
+                <i class="fas fa-save"></i> Save Profile Changes
+            </button>
+        </form>
+    </div>
+</body>
+</html>

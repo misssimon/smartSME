@@ -1,0 +1,92 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - smartSME</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(-45deg, #d9e8ff, #f0faff, #e0f7ff, #c9ecff);
+      background-size: 400% 400%;
+      animation: gradientShift 10s ease infinite;
+      display: flex; justify-content: center; align-items: center;
+      min-height: 100vh; padding: 20px;
+    }
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .login-container {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      padding: 35px 40px;
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      width: 100%; max-width: 450px;
+      text-align: center;
+    }
+    .login-container img {
+      width: 200px; height: 160px; object-fit: cover;
+      margin-bottom: 20px; border-radius: 20px;
+      box-shadow: 0 10px 20px rgba(0, 123, 255, 0.2);
+    }
+    .login-container h1 {
+      font-size: 2.2rem; font-weight: 700; color: #007bff; margin-bottom: 25px;
+    }
+    form { display: flex; flex-direction: column; gap: 15px; }
+    .input-icon { position: relative; }
+    .input-icon i {
+      position: absolute; top: 50%; left: 12px; transform: translateY(-50%); color: #aaa;
+    }
+    .input-icon input {
+      width: 100%; padding: 12px 12px 12px 38px;
+      border: 1px solid #ccc; border-radius: 8px; font-size: 16px; outline: none;
+    }
+    .input-icon input:focus { border-color: #007bff; }
+    button[type="submit"] {
+      background-color: #007bff; color: white; border: none;
+      padding: 12px; font-size: 16px; border-radius: 8px; cursor: pointer;
+    }
+    button[type="submit"]:hover { background-color: #0056b3; }
+    p { text-align: center; margin-top: 25px; font-size: 14px; }
+    a { color: #007bff; text-decoration: none; font-weight: 500; }
+    @media (max-width: 480px) {
+      .login-container { padding: 25px 20px; }
+      h1 { font-size: 1.8rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <img src="{% static 'images/image41.png' %}" alt="ShopEase Logo">
+    <h1>Welcome Back</h1>
+
+    {% if messages %}
+      <div style="background-color: #e0f7ff; color: #155724; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; font-weight: 500; text-align: left;">
+        {% for message in messages %}{{ message }}{% endfor %}
+      </div>
+    {% endif %}
+
+    <form method="POST">
+      {% csrf_token %}
+      <div class="input-icon">
+        <i class="fas fa-user"></i>
+        {{ form.username }}
+      </div>
+      <div class="input-icon">
+        <i class="fas fa-lock"></i>
+        {{ form.password }}
+      </div>
+      <button type="submit">Login</button>
+    </form>
+
+    <p>Don't have an account? <a href="{% url 'accounts:register' %}">Register here</a></p>
+  </div>
+</body>
+</html>

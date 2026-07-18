@@ -1,0 +1,131 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pay with M-Pesa - ShopEase</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(-45deg, #d9e8ff, #f0faff, #e0f7ff, #c9ecff);
+            padding: 40px 20px;
+        }
+        .payment-container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        .mpesa-logo {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .mpesa-logo i {
+            font-size: 4rem;
+            color: #00a651;
+        }
+        .order-summary {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+        .btn-pay {
+            background: #00a651;
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            width: 100%;
+            cursor: pointer;
+        }
+        .btn-pay:hover {
+            background: #008c44;
+        }
+    </style>
+</head>
+<body>
+    <div class="payment-container">
+        <div class="mpesa-logo">
+            <i class="fas fa-mobile-alt"></i>
+            <h2 style="color: #00a651; margin-top: 10px;">M-Pesa Payment</h2>
+        </div>
+
+        <div class="order-summary">
+            <h4>Order #{{ order.order_number }}</h4>
+            <p><strong>Total Amount:</strong> KES {{ order.total }}</p>
+            <p><strong>Payment Method:</strong> M-Pesa</p>
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+            <div style="margin-bottom: 20px;">
+                <label style="display:block; margin-bottom:8px; font-weight:600;">Enter M-Pesa Phone Number</label>
+                <input type="tel" name="phone_number" placeholder="e.g. 0712345678 or 254712345678" 
+                       style="width:100%; padding:14px; border:2px solid #ddd; border-radius:10px; font-size:1rem;" required>
+                <small style="color:#666;">Enter the number registered with M-Pesa</small>
+            </div>
+
+            <button type="submit" class="btn-pay">
+                <i class="fas fa-paper-plane"></i> Send Payment Request
+            </button>
+        </form>
+
+        <div style="text-align:center; margin-top:25px;">
+            <a href="{% url 'checkout:my_orders' %}" style="color:#007bff; text-decoration:none;">
+                ← Back to My Orders
+            </a>
+        </div>
+    </div>
+</body>
+</html>
+```
+
+---
+
+### Card Payment Template (Placeholder)
+
+```html
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pay with Card - ShopEase</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f7fa; padding: 40px 20px; }
+        .container { max-width: 500px; margin: 0 auto; background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2><i class="fas fa-credit-card"></i> Pay with Card</h2>
+        <p>This is a placeholder for Credit/Debit Card payment integration.</p>
+        <p><strong>Order #{{ order.order_number }}</strong></p>
+        <p><strong>Total:</strong> KES {{ order.total }}</p>
+        
+        <div style="margin-top:30px;">
+            <a href="{% url 'checkout:my_orders' %}" class="btn" style="background:#007bff; color:white; padding:12px 25px; border-radius:8px; text-decoration:none;">
+                Back to My Orders
+            </a>
+        </div>
+    </div>
+</body>
+</html>
+```
+
+---
+
+### Final Zip
+
+```bash
+cd /home/workdir/artifacts && zip -r ShopEase_Payment_Mpesa_App.zip payment/ && ls -lh ShopEase_Payment_Mpesa_App.zip
+```

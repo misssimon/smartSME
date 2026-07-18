@@ -1,0 +1,142 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Order #{{ order.order_number }} - ShopEase</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f7fa; padding: 40px 20px; }
+        .container { max-width: 920px; margin: 0 auto; background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); }
+        .status-step { display: flex; align-items: center; margin-bottom: 20px; }
+        .status-dot { width: 24px; height: 24px; border-radius: 50%; background: #ddd; margin-right: 15px; position: relative; }
+        .status-dot.active { background: #28a745; }
+        .status-dot.active::after { content: ''; position: absolute; width: 12px; height: 12px; background: white; border-radius: 50%; top: 6px; left: 6px; }
+        #map { height: 520px; border-radius: 12px; margin: 20px 0; border: 1px solid #ddd; }
+        .map-container { display: none; margin-top: 25px; }
+        .btn-map { background: #007bff; color: white; padding: 14px 28px; border: none; border-radius: 8px; font-size: 1.1rem; cursor: pointer; }
+        .btn-map:hover { background: #0056b3; }
+        .status-info { background: #e3f2fd; padding: 15px; border-radius: 10px; margin: 15px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-truck"></i> Track Order #{{ order.order_number }} - SmartSME</h1>
+
+        <div style="margin: 30px 0;">
+            <div class="status-step"><div class="status-dot {% if order.status != 'pending' %}active{% endif %}"></div><div class="status-text">Order Confirmed</div></div>
+            <div class="status-step"><div class="status-dot {% if order.status in 'preparing,out_for_delivery,delivered' %}active{% endif %}"></div><div class="status-text">Preparing</div></div>
+            <div class="status-step"><div class="status-dot {% if order.status in 'out_for_delivery,delivered' %}active{% endif %}"></div><div class="status-text">Out for Delivery</div></div>
+            <div class="status-step"><div class="status-dot {% if order.status == 'delivered' %}active{% endif %}"></div><div class="status-text">Delivered</div></div>
+        </div>
+
+        {% if tracking %}
+        <div class="status-info">
+            <h3>Current Status: <span style="color: #007bff;">{{ tracking.get_current_status_display|default:order.get_status_display }}</span></h3>
+        </div>
+        {% endif %}
+
+        {% if order.status in 'preparing,out_for_delivery,delivered' %}
+        <div style="text-align: center; margin: 25px 0;">
+            <button class="btn-map" onclick="startDeliverySimulation()">
+                <i class="fas fa-map-marked-alt"></i> Watch Live Delivery
+            </button>
+        </div>
+
+        <div class="map-container" id="mapContainer">
+            <h3>SmartSME Ambassador - Nairobi CBD</h3>
+            <div id="map"></div>
+            <div id="delivery-info" style="margin-top: 12px; padding: 10px; background:#fff3cd; border-radius:8px; font-weight:500;"></div>
+        </div>
+        {% endif %}
+
+        <div style="margin-top: 40px;">
+            <h3>Delivery Details</h3>
+            <p><strong>Address:</strong> {{ order.delivery_address }}</p>
+            {% if order.delivery_person %}
+                <p><strong>Delivery Person:</strong> {{ order.delivery_person.full_name }} ({{ order.delivery_person.get_delivery_type_display }})</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBj4ELdKCaI0nTeC95Ti0olRhBrhpkMpJE&libraries=geometry"></script>
+    <script>
+        let map, deliveryMarker;
+        let simulationRunning = false;
+        const SHOP_LOCATION = { lat: -1.2855, lng: 36.8261 };
+
+        function startDeliverySimulation() {
+            document.getElementById('mapContainer').style.display = 'block';
+            if (!map) initMap();
+            if (!simulationRunning) simulateDelivery();
+        }
+
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), { zoom: 14, center: SHOP_LOCATION });
+
+            new google.maps.Marker({
+                position: SHOP_LOCATION,
+                map: map,
+                title: "SmartSME Ambassador",
+                icon: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
+            });
+
+            {% if order.status in 'out_for_delivery,delivered' %}
+            const customerLoc = {
+                lat: parseFloat("{{ order.delivery_latitude|default:'-1.2921' }}"),
+                lng: parseFloat("{{ order.delivery_longitude|default:'36.8219' }}")
+            };
+            new google.maps.Marker({
+                position: customerLoc,
+                map: map,
+                title: "Your Address",
+                icon: "http://maps.google.com/mapfiles/ms/icons/red-dot.png"
+            });
+            {% endif %}
+        }
+
+        async function simulateDelivery() {
+            simulationRunning = true;
+            const info = document.getElementById('delivery-info');
+            const status = "{{ order.status }}";
+
+            if (status === "preparing") {
+                info.innerHTML = `🚀 Delivery Rider heading to shop...`;
+                await moveWithCurve({ lat: -1.2750, lng: 36.8400 }, SHOP_LOCATION, 15000);
+                info.innerHTML = `✅ Rider arrived at shop`;
+            } else {
+                info.innerHTML = `🚀 Rider starting from shop...`;
+                await moveWithCurve({ lat: -1.2750, lng: 36.8400 }, SHOP_LOCATION, 6000);
+                await new Promise(r => setTimeout(r, 1000));
+                info.innerHTML = `🚲 Heading to your location...`;
+                await moveWithCurve(SHOP_LOCATION, {
+                    lat: parseFloat("{{ order.delivery_latitude|default:'-1.2921' }}"),
+                    lng: parseFloat("{{ order.delivery_longitude|default:'36.8219' }}")
+                }, 22000);
+                info.innerHTML = `🎉 Delivered!`;
+            }
+        }
+
+        async function moveWithCurve(start, end, totalDuration) {
+            if (!deliveryMarker) {
+                deliveryMarker = new google.maps.Marker({
+                    position: start,
+                    map: map,
+                    icon: { url: "https://maps.google.com/mapfiles/kml/shapes/motorcycling.png", scaledSize: new google.maps.Size(32, 32) }
+                });
+            }
+            const steps = 60;
+            const delay = totalDuration / steps;
+            for (let i = 0; i <= steps; i++) {
+                const progress = i / steps;
+                const lat = start.lat + (end.lat - start.lat) * progress;
+                const lng = start.lng + (end.lng - start.lng) * progress * (1 + Math.sin(progress * Math.PI) * 0.08);
+                deliveryMarker.setPosition({ lat, lng });
+                map.panTo({ lat, lng });
+                await new Promise(r => setTimeout(r, delay));
+            }
+        }
+    </script>
+</body>
+</html>

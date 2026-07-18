@@ -1,0 +1,253 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart - smartSME</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        :root {
+            --primary: #007bff;
+            --danger: #dc3545;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(-45deg, #d9e8ff, #f0faff, #e0f7ff, #c9ecff);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px 15px;
+        }
+
+        .cart-container {
+            max-width: 950px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            padding: 35px 25px;
+            overflow: hidden;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+            color: #333;
+            font-size: 1.85rem;
+            text-align: center;
+        }
+
+        .cart-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+
+        .cart-table th,
+        .cart-table td {
+            padding: 16px 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .cart-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #444;
+        }
+
+        .product-cell {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .product-cell img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .quantity-form {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .quantity-form input {
+            width: 70px;
+            padding: 8px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .total-row {
+            text-align: right;
+            font-size: 1.4rem;
+            padding: 20px 0;
+            border-top: 2px solid #eee;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.05rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+
+        .remove-btn {
+            color: var(--danger);
+            font-size: 1.3rem;
+            padding: 8px;
+            transition: color 0.2s;
+        }
+
+        .remove-btn:hover {
+            color: #c82333;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: #666;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .cart-container {
+                padding: 25px 18px;
+            }
+            
+            .cart-table th:nth-child(3),
+            .cart-table th:nth-child(4),
+            .cart-table td:nth-child(3),
+            .cart-table td:nth-child(4) {
+                display: none;
+            }
+            
+            .cart-table td:nth-child(1) {
+                font-weight: 600;
+            }
+            
+            .product-cell {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .quantity-form {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.6rem;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="cart-container">
+        <h1><i class="fas fa-shopping-cart"></i> Your Cart</h1>
+
+        {% if cart.items.all %}
+            <table class="cart-table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                        <th style="width: 50px;"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart.items.all %}
+                    <tr>
+                        <td>
+                            <div class="product-cell">
+                                {% if item.product.image %}
+                                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+                                {% else %}
+                                    <div style="width:60px; height:60px; background:#f0f0f0; border-radius:8px; display:flex; align-items:center; justify-content:center;">
+                                        <i class="fas fa-image" style="color:#ccc; font-size:1.4rem;"></i>
+                                    </div>
+                                {% endif %}
+                                <div>
+                                    <strong>{{ item.product.name }}</strong>
+                                    <br>
+                                    <small style="color:#666;">by {{ item.product.farmer.username }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td><strong>KES {{ item.product.discounted_price }}</strong></td>
+                        <td>
+                            <form method="POST" action="{% url 'dashboard:update_cart_item' item.id %}" class="quantity-form">
+                                {% csrf_token %}
+                                <input type="number" name="quantity" value="{{ item.quantity }}" min="1">
+                                <button type="submit" class="btn" style="padding:8px 14px; font-size:0.9rem;">Update</button>
+                            </form>
+                        </td>
+                        <td><strong>KES {{ item.total_price }}</strong></td>
+                        <td>
+                            <a href="{% url 'dashboard:remove_from_cart' item.id %}" class="remove-btn" 
+                               onclick="return confirm('Remove this item from cart?')">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="total-row">
+                <strong>Total: KES {{ cart.total_price }}</strong>
+            </div>
+
+            <div style="text-align: right; margin-top: 10px;">
+                <a href="{% url 'checkout:checkout' %}" class="btn btn-primary">
+                    Proceed to Checkout <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-shopping-cart fa-5x" style="color:#ddd; margin-bottom: 25px;"></i>
+                <h2>Your cart is empty</h2>
+                <p style="max-width: 320px; margin: 15px auto 25px; font-size: 1.05rem;">
+                    Looks like you haven't added any products yet.
+                </p>
+                <a href="{% url 'dashboard:buyer_dashboard' %}" class="btn btn-primary">
+                    <i class="fas fa-store"></i> Browse Marketplace
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

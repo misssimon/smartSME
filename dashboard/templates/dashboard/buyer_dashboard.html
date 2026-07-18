@@ -1,0 +1,329 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketplace - smartSME</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        :root {
+            --primary: #007bff;
+            --success: #28a745;
+            --text-dark: #222;
+            --text-light: #666;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(-45deg, #d9e8ff, #f0faff, #e0f7ff, #c9ecff);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.5;
+        }
+
+        .header {
+            max-width: 1200px;
+            margin: 0 auto 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header h1 {
+            margin: 0;
+            color: #333;
+            font-size: 1.8rem;
+        }
+
+        .header p {
+            color: #666;
+            margin: 5px 0 0 0;
+        }
+
+        .search-container {
+            max-width: 1200px;
+            margin: 0 auto 30px;
+        }
+
+        .search-form {
+            display: flex;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .search-form input {
+            flex: 1;
+            padding: 14px 18px;
+            border-radius: 12px;
+            border: 2px solid #ddd;
+            font-size: 1rem;
+            min-width: 0;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 25px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            height: 100%;
+        }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+        }
+
+        .product-image {
+            height: 180px;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-info {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            height: calc(100% - 180px);
+        }
+
+        .product-info h3 {
+            margin: 0 0 6px;
+            font-size: 1.15rem;
+            color: var(--text-dark);
+        }
+
+        .seller {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+        }
+
+        .price-container {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .price {
+            font-size: 1.35rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .original-price {
+            text-decoration: line-through;
+            color: #999;
+            font-size: 1rem;
+        }
+
+        .discount {
+            background: var(--success);
+            color: white;
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+
+        .view-btn {
+            margin-top: auto;
+            background: var(--success);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-align: center;
+            display: block;
+            transition: background 0.3s;
+        }
+
+        .view-btn:hover {
+            background: #218838;
+        }
+
+        .cart-btn {
+            position: relative;
+            white-space: nowrap;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #dc3545;
+            color: white;
+            font-size: 0.7rem;
+            padding: 1px 7px;
+            border-radius: 50%;
+            min-width: 18px;
+            text-align: center;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            max-width: 1200px;
+            margin: 70px auto 0;
+            background: white;
+            border-radius: 20px;
+            padding: 45px 30px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                text-align: center;
+                gap: 15px;
+            }
+            
+            .header > div {
+                text-align: center;
+                width: 100%;
+            }
+            
+            .product-grid {
+                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+                gap: 20px;
+            }
+            
+            .product-image {
+                height: 160px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .product-grid {
+                grid-template-columns: 1fr;
+                gap: 18px;
+            }
+            
+            .search-form {
+                flex-direction: column;
+            }
+            
+            .cta-section {
+                padding: 35px 20px;
+                margin-top: 50px;
+            }
+        }
+
+        /* Improve touch targets on mobile */
+        @media (hover: none) and (pointer: coarse) {
+            .btn, .view-btn {
+                padding: 14px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <h1>Marketplace</h1>
+            <p>Fresh produce directly from farmers</p>
+        </div>
+       
+        <a href="{% url 'dashboard:view_cart' %}" class="btn cart-btn" style="background: var(--primary); padding: 12px 20px; border-radius: 8px; color: white; text-decoration: none; font-weight: 600;">
+            <i class="fas fa-shopping-cart"></i> View Cart
+            {% if cart_count %}
+                <span class="cart-count">{{ cart_count }}</span>
+            {% endif %}
+        </a>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="search-container">
+        <form method="GET" class="search-form">
+            <input type="text" name="search" placeholder="Search products or farmers..." value="{{ search }}">
+            <button type="submit" class="btn" style="background: var(--primary); padding: 14px 28px; border: none; border-radius: 12px; font-size: 1rem; cursor: pointer;">
+                Search
+            </button>
+        </form>
+    </div>
+
+    <!-- Product Grid -->
+    <div class="product-grid">
+        {% for product in products %}
+        <a href="{% url 'dashboard:product_detail' product.pk %}" class="product-card">
+            <div class="product-image">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                {% else %}
+                    <i class="fas fa-image fa-4x" style="color:#ddd;"></i>
+                {% endif %}
+            </div>
+            <div class="product-info">
+                <h3>{{ product.name }}</h3>
+                <p class="seller">by {{ product.farmer.username }}</p>
+               
+                <div class="price-container">
+                    <span class="price">KES {{ product.discounted_price }}</span>
+                    {% if product.discount_percentage > 0 %}
+                        <span class="original-price">KES {{ product.price_per_unit }}</span>
+                        <span class="discount">-{{ product.discount_percentage }}%</span>
+                    {% endif %}
+                </div>
+                
+                <span class="view-btn">
+                    <i class="fas fa-eye"></i> View Details
+                </span>
+            </div>
+        </a>
+        {% empty %}
+            <p style="text-align: center; grid-column: 1 / -1; color: #666; font-size: 1.1rem; padding: 60px 20px;">
+                No products found matching your search.
+            </p>
+        {% endfor %}
+    </div>
+
+    <!-- Become a Delivery Partner CTA -->
+    <div class="cta-section">
+        <h2 style="color: #333; margin-bottom: 12px;">Want to deliver with smartSME?</h2>
+        <p style="color: #555; max-width: 620px; margin: 0 auto 25px; font-size: 1.05rem;">
+            Are you a delivery company (like Glovo, Bolt Food, etc.) or an individual rider?<br>
+            Join our growing network of trusted delivery partners.
+        </p>
+        <a href="{% url 'checkout:company_registration' %}" class="btn" style="background: var(--success); padding: 15px 40px; font-size: 1.1rem; border-radius: 12px;">
+            <i class="fas fa-truck"></i> Register as a Delivery Partner
+        </a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,94 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders - ShopEase</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f7fa; padding: 40px 20px; }
+        .container { max-width: 900px; margin: 0 auto; }
+        .order-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        .status {
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-confirmed { background: #d4edda; color: #155724; }
+        .status-out_for_delivery { background: #cce5ff; color: #004085; }
+        .status-delivered { background: #d4edda; color: #155724; }
+        .btn {
+            padding: 8px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-block;
+            margin-right: 8px;
+            margin-top: 10px;
+        }
+        .btn-pay {
+            background: #00a651;
+            color: white;
+        }
+        .btn-track {
+            background: #007bff;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 style="margin-bottom: 30px;"><i class="fas fa-list"></i> My Orders</h1>
+
+        {% for order in orders %}
+        <div class="order-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                <div>
+                    <h3 style="margin: 0;">Order #{{ order.order_number }}</h3>
+                    <small style="color: #666;">{{ order.created_at|date:"d M Y, H:i" }}</small>
+                </div>
+                <span class="status status-{{ order.status }}">
+                    {{ order.get_status_display }}
+                </span>
+            </div>
+
+            <div style="margin: 20px 0; padding: 15px 0; border-top: 1px solid #eee; border-bottom: 1px solid #eee;">
+                <strong>Total:</strong> KES {{ order.total }}<br>
+                <strong>Payment:</strong> {{ order.get_payment_method_display }}<br>
+                <strong>Delivery:</strong> {{ order.delivery_option.name }}
+            </div>
+
+            <!-- Action Buttons -->
+            <div>
+                {% if order.status == 'pending' %}
+                    {% if order.payment_method == 'mpesa' %}
+                        <a href="{% url 'payment:mpesa_payment' order.order_number %}" class="btn btn-pay">
+                            <i class="fas fa-mobile-alt"></i> Pay with M-Pesa
+                        </a>
+                    {% elif order.payment_method == 'card' %}
+                        <a href="{% url 'payment:card_payment' order.order_number %}" class="btn btn-pay">
+                            <i class="fas fa-credit-card"></i> Pay with Card
+                        </a>
+                    {% endif %}
+                {% endif %}
+
+                <a href="{% url 'checkout:track_order' order.order_number %}" class="btn btn-track">
+                    <i class="fas fa-truck"></i> Track Order
+                </a>
+            </div>
+        </div>
+        {% empty %}
+            <p style="text-align: center; color: #666;">You have no orders yet.</p>
+        {% endfor %}
+    </div>
+</body>
+</html>

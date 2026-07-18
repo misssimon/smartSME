@@ -1,0 +1,282 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - ShopEase</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        :root {
+            --primary: #007bff;
+            --success: #28a745;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(-45deg, #d9e8ff, #f0faff, #e0f7ff, #c9ecff);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px 15px;
+        }
+
+        .checkout-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            padding: 30px 25px;
+        }
+
+        .section-title {
+            font-size: 1.45rem;
+            margin-bottom: 25px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .order-summary {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .order-item:last-child {
+            border-bottom: none;
+        }
+
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 110px;
+        }
+
+        .delivery-option {
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .delivery-option:hover {
+            border-color: #a0c4ff;
+        }
+
+        .delivery-option.selected {
+            border-color: var(--primary);
+            background: #f0f7ff;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            padding: 16px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        .total {
+            font-size: 1.35rem;
+            font-weight: bold;
+            text-align: right;
+            margin: 20px 0;
+            padding-top: 15px;
+            border-top: 2px solid #eee;
+        }
+
+        /* Responsive Layout */
+        @media (min-width: 992px) {
+            .checkout-container {
+                grid-template-columns: 1fr 420px;
+                gap: 35px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .card {
+                padding: 25px 20px;
+            }
+            
+            .order-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="checkout-container">
+        
+        <!-- Order Summary -->
+        <div class="card">
+            <h2 class="section-title">
+                <i class="fas fa-shopping-cart"></i> Order Summary
+            </h2>
+            
+            <div class="order-summary">
+                {% for item in cart.items.all %}
+                <div class="order-item">
+                    <div>
+                        <strong>{{ item.product.name }}</strong><br>
+                        <small style="color:#666;">
+                            {{ item.quantity }} × KES {{ item.product.discounted_price }}
+                        </small>
+                    </div>
+                    <div style="font-weight: bold; color: var(--primary);">
+                        KES {{ item.total_price }}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="total">
+                Total: <span style="color: var(--primary);">KES {{ cart.total_price }}</span>
+            </div>
+        </div>
+
+        <!-- Checkout Form -->
+        <div class="card">
+            <h2 class="section-title">
+                <i class="fas fa-credit-card"></i> Checkout Details
+            </h2>
+          
+            <form method="POST" action="{% url 'checkout:place_order' %}">
+                {% csrf_token %}
+
+                <!-- Payment Method -->
+                <div class="form-group">
+                    <label>Payment Method</label>
+                    <select name="payment_method" required>
+                        <option value="mpesa">M-Pesa</option>
+                        <option value="card">Credit / Debit Card</option>
+                        <option value="cash">Cash on Delivery</option>
+                    </select>
+                </div>
+
+                <!-- Delivery Method -->
+                <div class="form-group">
+                    <label>Delivery Option</label>
+                    {% for option in delivery_options %}
+                    <div class="delivery-option" onclick="selectDelivery(this, {{ option.id }})">
+                        <strong>{{ option.name }}</strong><br>
+                        <small>{{ option.description }} • {{ option.estimated_time }}</small><br>
+                        <span style="color: var(--primary); font-weight: bold;">
+                            {% if option.base_fee == 0 %}Free{% else %}KES {{ option.base_fee }}{% endif %}
+                        </span>
+                    </div>
+                    {% endfor %}
+                    <input type="hidden" name="delivery_option" id="delivery_option" required>
+                </div>
+
+                <!-- Delivery Address -->
+                <div class="form-group">
+                    <label>Full Delivery Address <span style="color:red;">*</span></label>
+                    <textarea name="delivery_address" id="delivery_address" rows="4"
+                        placeholder="House number, Street, Estate, Nearest landmark..." required></textarea>
+                    <small style="color:#666; font-size:0.9rem;">
+                        Please provide a detailed address for smooth delivery.
+                    </small>
+                </div>
+
+                <!-- Hidden Coordinates -->
+                <input type="hidden" name="delivery_latitude" id="delivery_latitude" value="-1.2921">
+                <input type="hidden" name="delivery_longitude" id="delivery_longitude" value="36.8219">
+
+                <!-- Delivery Notes -->
+                <div class="form-group">
+                    <label>Delivery Notes (Optional)</label>
+                    <textarea name="delivery_notes" rows="3" 
+                        placeholder="Call me before arrival, leave at the gate, etc."></textarea>
+                </div>
+
+                <button type="submit" class="btn">
+                    <i class="fas fa-check-circle"></i> Place Secure Order
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function selectDelivery(element, optionId) {
+            document.querySelectorAll('.delivery-option').forEach(el => {
+                el.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            document.getElementById('delivery_option').value = optionId;
+        }
+
+        // Auto-select first delivery option
+        window.onload = function() {
+            const firstOption = document.querySelector('.delivery-option');
+            if (firstOption) {
+                firstOption.click();
+            }
+        };
+    </script>
+</body>
+</html>
