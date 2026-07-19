@@ -1,4 +1,6 @@
 {% load static %}
+{% load otp_webauthn %}   <!-- Important for Passkey support -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -68,12 +70,21 @@
     .role-card .role-title { font-weight: 700; color: #222; font-size: 1.02rem; }
     .role-card .role-desc { font-size: 0.78rem; color: #666; }
 
-    button[type="submit"] {
+    button[type="submit"], .passkey-register-btn {
       background-color: #007bff; color: white; border: none;
       padding: 14px; font-size: 16px; font-weight: 600; border-radius: 10px;
       cursor: pointer; margin-top: 8px;
     }
-    button[type="submit"]:hover { background-color: #0056b3; }
+    button[type="submit"]:hover, .passkey-register-btn:hover { 
+      background-color: #0056b3; 
+    }
+    .passkey-register-btn {
+      background-color: #28a745;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
 
     p { text-align: center; margin-top: 22px; font-size: 14px; }
     a { color: #007bff; text-decoration: none; font-weight: 500; }
@@ -86,7 +97,7 @@
 </head>
 <body>
   <div class="register-container">
-    <img src="{% static 'images/image41.png' %}" alt="ShopEase Logo">
+    <img src="{% static 'images/image41.png' %}" alt="smartSME Logo">
     <h1>Create Account</h1>
     <p class="subtitle">Join smartSME as a Farmer or Institutional Buyer</p>
 
@@ -135,8 +146,14 @@
       <button type="submit">Create My Account</button>
     </form>
 
+    <!-- Passkey Registration -->
+    <div id="passkey-registration-placeholder"></div>
+
     <p>Already have an account? <a href="{% url 'accounts:login' %}">Login here</a></p>
   </div>
+
+  <!-- WebAuthn Scripts for Registration -->
+  {% render_otp_webauthn_register_scripts %}
 
   <script>
     function setupRoleCards() {

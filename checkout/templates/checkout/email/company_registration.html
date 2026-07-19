@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Company Registration Received</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f7fa; padding: 20px; }
+    .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    .header { background: #007bff; color: white; padding: 30px; text-align: center; }
+    .content { padding: 35px; color: #333; line-height: 1.7; }
+    .footer { background: #f8f9fa; padding: 25px; text-align: center; font-size: 14px; color: #666; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Application Received</h1>
+    </div>
+    <div class="content">
+      <p>Dear <strong>{{ company.name }}</strong> Team,</p>
+      
+      <p>Thank you for registering your delivery company with smartSME.</p>
+      
+      <p>We have received your application and our team will review it shortly. You will be notified once your account is approved.</p>
+      
+      <p><strong>Company Details:</strong></p>
+      <ul>
+        <li><strong>Name:</strong> {{ company.name }}</li>
+        <li><strong>Contact:</strong> {{ company.contact_email }} | {{ company.contact_phone }}</li>
+        <li><strong>Submitted on:</strong> {{ company.created_at|date:"d M, Y" }}</li>
+      </ul>
+      
+      <p>If you have any questions, feel free to reply to this email.</p>
+      
+      <p>Best regards,<br><strong>The smartSME Team</strong></p>
+    </div>
+    <div class="footer">
+      &copy; smartSME 2026
+    </div>
+  </div>
+</body>
+</html>

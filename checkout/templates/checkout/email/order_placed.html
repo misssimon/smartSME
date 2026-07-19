@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Order Placed Successfully</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f7fa; padding: 20px; }
+    .container { max-width: 650px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+    .header { background: #007bff; color: white; padding: 30px; text-align: center; }
+    .content { padding: 35px; line-height: 1.7; color: #333; }
+    .footer { background: #f8f9fa; padding: 25px; text-align: center; font-size: 14px; color: #666; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Order Placed Successfully! 🎉</h1>
+      <p>Order #{{ order.order_number }}</p>
+    </div>
+    <div class="content">
+      <p>Dear <strong>{{ user.username }}</strong>,</p>
+      
+      <p>Thank you for your order! Your order has been received and is now being processed.</p>
+      
+      <p><strong>Total:</strong> KES {{ order.total }}</p>
+      <p><strong>Payment Method:</strong> {{ order.get_payment_method_display }}</p>
+      
+      <p>You can track your order status from your dashboard.</p>
+      
+      <p>Best regards,<br><strong>The smartSME Team</strong></p>
+    </div>
+    <div class="footer">
+      &copy; smartSME 2026 • All Rights Reserved
+    </div>
+  </div>
+</body>
+</html>

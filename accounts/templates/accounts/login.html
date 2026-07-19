@@ -1,4 +1,6 @@
 {% load static %}
+{% load otp_webauthn %}   <!-- Important: Load this tag library -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,6 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login - smartSME</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+  
   <style>
     * { box-sizing: border-box; }
     body {
@@ -49,22 +52,31 @@
       border: 1px solid #ccc; border-radius: 8px; font-size: 16px; outline: none;
     }
     .input-icon input:focus { border-color: #007bff; }
-    button[type="submit"] {
+
+    button[type="submit"], .passkey-btn {
       background-color: #007bff; color: white; border: none;
       padding: 12px; font-size: 16px; border-radius: 8px; cursor: pointer;
+      margin-top: 10px;
     }
-    button[type="submit"]:hover { background-color: #0056b3; }
+    button[type="submit"]:hover, .passkey-btn:hover { 
+      background-color: #0056b3; 
+    }
+
+    .passkey-btn {
+      background-color: #28a745;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
     p { text-align: center; margin-top: 25px; font-size: 14px; }
     a { color: #007bff; text-decoration: none; font-weight: 500; }
-    @media (max-width: 480px) {
-      .login-container { padding: 25px 20px; }
-      h1 { font-size: 1.8rem; }
-    }
   </style>
 </head>
 <body>
   <div class="login-container">
-    <img src="{% static 'images/image41.png' %}" alt="ShopEase Logo">
+    <img src="{% static 'images/image41.png' %}" alt="smartSME Logo">
     <h1>Welcome Back</h1>
 
     {% if messages %}
@@ -83,10 +95,17 @@
         <i class="fas fa-lock"></i>
         {{ form.password }}
       </div>
-      <button type="submit">Login</button>
+      <button type="submit">Login with Password</button>
     </form>
+
+    <!-- Passkey Login Button -->
+    <div id="passkey-verification-placeholder"></div>
 
     <p>Don't have an account? <a href="{% url 'accounts:register' %}">Register here</a></p>
   </div>
+
+  <!-- WebAuthn Scripts (required) -->
+  {% render_otp_webauthn_auth_scripts username_field_selector="input[name='username']" %}
+
 </body>
 </html>

@@ -1,33 +1,32 @@
 """
-Django settings for smartSME project.
-Updated with proper configuration for development
+Django settings for smartSME project - LOCAL DEVELOPMENT CONFIG
 """
-
 from pathlib import Path
 import os
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# =============================================================================
-# SECURITY WARNINGS
-# =============================================================================
 SECRET_KEY = 'django-insecure-#)xw42($8*e*egi!)ecw&kck!pr8odfj@czmnligr#fka60+vq'
-
 DEBUG = True
 
-# ====================== ALLOWED_HOSTS (FIXED) ======================
-if DEBUG:
-    ALLOWED_HOSTS = ['*']                    # Best for local development
-else:
-    ALLOWED_HOSTS = ['localhost', '127.0.0.1']
-# ===================================================================
-
+ALLOWED_HOSTS = ['*']   # Safe for local development
 
 # =============================================================================
-# APPLICATION DEFINITION
+# ALLAUTH CONFIGURATION (Important!)
 # =============================================================================
+
+# Disable allauth's default account pages so your custom views take priority
+ACCOUNT_LOGIN_ON_PASSWORD_RESET = False
+ACCOUNT_LOGOUT_REDIRECT_URL = '/accounts/login/'
+ACCOUNT_LOGIN_REDIRECT_URL = '/'   # or 'dashboard:home' later
+
+# Tell allauth to use your custom login/signup URLs
+LOGIN_REDIRECT_URL = '/'                    # After successful login
+LOGOUT_REDIRECT_URL = '/accounts/login/'    # After logout
+
+# Optional: Make allauth not override your templates completely
+ACCOUNT_TEMPLATE_REDIRECT = None
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -35,33 +34,42 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
 
-    # Your custom apps
+    # Third-party
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'django_otp',
+    'django_otp_webauthn',
+
+    # Custom apps
     'accounts',
     'dashboard',
     'checkout',
     'payment',
-
 ]
+
+SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
 ROOT_URLCONF = 'smartSME.urls'
 
-# ====================== TEMPLATES (UPDATED) ======================
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],   # ← Points to your templates folder
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -73,13 +81,11 @@ TEMPLATES = [
         },
     },
 ]
-# =================================================================
 
 WSGI_APPLICATION = 'smartSME.wsgi.application'
 
-
 # =============================================================================
-# DATABASE
+# DATABASE - LOCAL SQLITE (Development)
 # =============================================================================
 #DATABASES = {
 #    'default': {
@@ -87,20 +93,12 @@ WSGI_APPLICATION = 'smartSME.wsgi.application'
 #        'NAME': BASE_DIR / 'db.sqlite3',
 #    }
 #}
-#
+
+# Production database (commented out)
 import dj_database_url
-import os
-
 DATABASES = {
-    'default': dj_database_url.config(
-        default='sqlite:///db.sqlite3',
-        conn_max_age=600
-    )
+    'default': dj_database_url.config(default='sqlite:///db.sqlite3')
 }
-
-# For Render.com PostgreSQL
-if 'DATABASE_URL' in os.environ:
-    DATABASES['default'] = dj_database_url.parse(os.environ['DATABASE_URL'])
 
 # =============================================================================
 # PASSWORD VALIDATION
@@ -112,43 +110,61 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-
-# =============================================================================
-# INTERNATIONALIZATION
-# =============================================================================
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'Africa/Nairobi'          # ← Changed to Kenya time
+TIME_ZONE = 'Africa/Nairobi'
 USE_I18N = True
 USE_TZ = True
 
-
 # =============================================================================
-# STATIC FILES
+# STATIC & MEDIA
 # =============================================================================
-# ====================== STATIC FILES (Production Ready) ======================
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_DIRS = [BASE_DIR / 'static']
 
-# For development + production
-STATICFILES_DIRS = [
-    BASE_DIR / 'static',
-]
-
-# Optional: Use WhiteNoise for better static file serving on Render
-# Add 'whitenoise.middleware.WhiteNoiseMiddleware' in MIDDLEWARE after SecurityMiddleware
-
-# ====================== MEDIA FILES ======================
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-
-# =============================================================================
-# DEFAULT PRIMARY KEY
-# =============================================================================
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# =============================================================================
+# EMAIL - LOCAL DEVELOPMENT
+# =============================================================================
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'   # Prints emails in terminal
+
+# Production Email (Gmail) - Commented Out
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'soshisunny073@gmail.com'
+EMAIL_HOST_PASSWORD = 'smqictmqccptacqe'
+DEFAULT_FROM_EMAIL = 'smartSME <noreply@smartSME.local>'
 
 # =============================================================================
-# EMAIL (For welcome emails during development)
+# AUTHENTICATION
 # =============================================================================
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+ACCOUNT_LOGIN_METHODS = {'username', 'email'}
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_EMAIL_VERIFICATION = 'optional'
+
+# =============================================================================
+# WEBAUTHN / BIOMETRIC SETTINGS
+# =============================================================================
+OTP_WEBAUTHN_RP_ID = 'localhost'
+OTP_WEBAUTHN_RP_NAME = 'smartSME'
+
+OTP_WEBAUTHN_ALLOWED_ORIGINS = [
+    'https://smartsme.onrender.com',
+    'https://127.0.0.1:8000',
+]
+
+# Allow HTTP for local development (important!)
+OTP_WEBAUTHN_ALLOW_HTTP = False

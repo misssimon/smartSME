@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>New Login Alert</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f7fa; padding: 20px; }
+    .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    .header { background: #ff9800; color: white; padding: 25px; text-align: center; }
+    .content { padding: 30px; color: #333; line-height: 1.6; }
+    .footer { background: #f8f9fa; padding: 20px; text-align: center; font-size: 13px; color: #777; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h2>🔐 New Login Detected</h2>
+    </div>
+    <div class="content">
+      <p>Hello <strong>{{ user.username }}</strong>,</p>
+      
+      <p>We noticed a new login to your smartSME account.</p>
+      
+      <p><strong>Time:</strong> {{ login_time|date:"Y-m-d H:i:s" }}</p>
+      <p><strong>Role:</strong> {{ user.profile.get_role_display|default:"User" }}</p>
+      
+      <p>If this was you, no action is needed. If you didn't log in, please change your password immediately for security.</p>
+      
+      <p>Best regards,<br><strong>The smartSME Security Team</strong></p>
+    </div>
+    <div class="footer">
+      &copy; smartSME • Secure Login Notification
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Payment Notification</title>
+</head>
+<body>
+  <h2>New Payment Activity</h2>
+  <p><strong>Order:</strong> #{{ order.order_number }}</p>
+  <p><strong>Customer:</strong> {{ order.user.username }} ({{ order.user.email }})</p>
+  <p><strong>Amount:</strong> KES {{ order.total }}</p>
+  <p><strong>Message:</strong> {{ message }}</p>
+  <p>Time: {{ order.updated_at }}</p>
+</body>
+</html>

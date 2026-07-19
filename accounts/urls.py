@@ -1,8 +1,11 @@
 from django.urls import path
 from . import views
-from django.conf import settings
-from django.conf.urls.static import static
-from accounts import views as accounts_views
+from .views_webauthn import (          # ← Import from here
+    webauthn_login_begin,
+    webauthn_login_complete,
+    webauthn_register_begin,
+    webauthn_register_complete,
+)
 
 app_name = 'accounts'
 
@@ -12,6 +15,12 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('home/', views.home, name='home'),
     path('cart/', views.cart_view, name='cart_view'),
+
+    # Biometric (WebAuthn) URLs
+    path('webauthn/login/begin/', webauthn_login_begin, name='webauthn_login_begin'),
+    path('webauthn/login/complete/', webauthn_login_complete, name='webauthn_login_complete'),
+    path('webauthn/register/begin/', webauthn_register_begin, name='webauthn_register_begin'),
+    path('webauthn/register/complete/', webauthn_register_complete, name='webauthn_register_complete'),
 ]
 
-urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+# Remove the old import from views_webauthn at the top if it's still there

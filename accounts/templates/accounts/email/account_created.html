@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Welcome to smartSME</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f7fa; padding: 20px; margin: 0; }
+    .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    .header { background: linear-gradient(135deg, #007bff, #00c6ff); color: white; padding: 35px; text-align: center; }
+    .header h1 { margin: 0; font-size: 28px; }
+    .content { padding: 35px; color: #333; line-height: 1.7; }
+    .content p { margin-bottom: 18px; }
+    .btn {
+      display: inline-block;
+      background: #28a745;
+      color: white;
+      padding: 14px 28px;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
+      margin: 25px 0;
+    }
+    .footer {
+      background: #f8f9fa;
+      padding: 25px;
+      text-align: center;
+      font-size: 14px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Welcome to smartSME! 🎉</h1>
+    </div>
+    <div class="content">
+      <p>Hi <strong>{{ user.username }}</strong>,</p>
+      
+      <p>Your account has been successfully created as a <strong>{{ role }}</strong>.</p>
+      
+      <p>You're now part of the growing smartSME community where farmers and institutional buyers connect directly.</p>
+      
+      <a href="http://localhost:8000/accounts/login/" class="btn">Login to Your Account</a>
+      
+      <p>If you have any questions or need help getting started, feel free to reply to this email.</p>
+      
+      <p>Best regards,<br><strong>The smartSME Team</strong></p>
+    </div>
+    <div class="footer">
+      &copy; {{ site_name }} 2026 • All Rights Reserved<br>
+      <small>This is an automated email. Please do not reply to this address.</small>
+    </div>
+  </div>
+</body>
+</html>

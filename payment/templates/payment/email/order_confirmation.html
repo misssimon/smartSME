@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Payment Successful</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f7fa; padding: 20px; }
+    .container { max-width: 650px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+    .header { background: #28a745; color: white; padding: 30px; text-align: center; }
+    .content { padding: 35px; line-height: 1.7; color: #333; }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+    th, td { padding: 12px; border-bottom: 1px solid #eee; }
+    th { background: #f8f9fa; }
+    .footer { background: #f8f9fa; padding: 25px; text-align: center; font-size: 14px; color: #666; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Payment Received Successfully! 🎉</h1>
+      <p>Order #{{ order.order_number }}</p>
+    </div>
+    <div class="content">
+      <p>Dear <strong>{{ user.username }}</strong>,</p>
+      
+      <p>Your payment for Order <strong>#{{ order.order_number }}</strong> has been successfully received.</p>
+      
+      <p><strong>Total Paid:</strong> KES {{ order.total }}</p>
+      <p><strong>Payment Method:</strong> M-Pesa</p>
+      
+      <p>Your order is now being processed. You can track it from your dashboard.</p>
+      
+      <p>Thank you for shopping with smartSME!</p>
+    </div>
+    <div class="footer">
+      &copy; smartSME 2026 • All Rights Reserved
+    </div>
+  </div>
+</body>
+</html>

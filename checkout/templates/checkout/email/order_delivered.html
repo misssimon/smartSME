@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Order Delivered</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f7fa; padding: 20px; }
+    .container { max-width: 650px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+    .header { background: #17a2b8; color: white; padding: 30px; text-align: center; }
+    .content { padding: 35px; line-height: 1.7; color: #333; }
+    .footer { background: #f8f9fa; padding: 25px; text-align: center; font-size: 14px; color: #666; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Your Order Has Been Delivered! 📦</h1>
+    </div>
+    <div class="content">
+      <p>Dear <strong>{{ user.username }}</strong>,</p>
+      
+      <p>Great news! Your order <strong>#{{ order.order_number }}</strong> has been successfully delivered.</p>
+      
+      <p>We hope you enjoy your purchase. If you have any issues with the delivery, please contact us immediately.</p>
+      
+      <p>Thank you for choosing smartSME!</p>
+      
+      <p>Best regards,<br><strong>The smartSME Team</strong></p>
+    </div>
+    <div class="footer">
+      &copy; smartSME 2026
+    </div>
+  </div>
+</body>
+</html>

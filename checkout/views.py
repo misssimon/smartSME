@@ -2,6 +2,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db import transaction
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
+from django.conf import settings
 from decimal import Decimal
 from dashboard.models import Cart
 from .models import (
@@ -9,6 +12,50 @@ from .models import (
     DeliveryCompany, DeliveryTracking
 )
 from .forms import CompanyRegistrationForm
+
+
+# ==================== EMAIL HELPERS ====================
+
+def send_order_status_email(order, subject, template_name):
+    """Reusable function to send order status emails"""
+    try:
+        html_message = render_to_string(f'checkout/email/{template_name}', {
+            'order': order,
+            'user': order.user,
+            'site_name': 'smartSME',
+        })
+        email = EmailMessage(
+            subject=subject,
+            body=html_message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=[order.user.email],
+        )
+        email.content_subtype = 'html'
+        email.send(fail_silently=True)
+        print(f"✅ Status email sent to {order.user.email} - {subject}")
+    except Exception as e:
+        print(f"⚠️ Failed to send status email: {e}")
+
+
+def send_admin_notification(order, message):
+    """Send notification to admin"""
+    try:
+        admin_email = 'soshisunny073@gmail.com'
+        html_message = render_to_string('checkout/email/admin_order_notification.html', {
+            'order': order,
+            'message': message,
+        })
+        email = EmailMessage(
+            subject=f"Order Update - #{order.order_number}",
+            body=html_message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=[admin_email],
+        )
+        email.content_subtype = 'html'
+        email.send(fail_silently=True)
+        print(f"✅ Admin notified for Order #{order.order_number}")
+    except Exception as e:
+        print(f"⚠️ Admin notification failed: {e}")
 
 
 # ==================== CHECKOUT ====================
@@ -97,8 +144,13 @@ def place_order(request):
     cart.items.all().delete()
     DeliveryTracking.objects.create(order=order)
 
+    # Send Order Placed Email
+    send_order_status_email(order, f"Order Placed Successfully - #{order.order_number}", 'order_placed.html')
+    send_admin_notification(order, "New Order Placed")
+
     messages.success(request, f"Order #{order.order_number} placed successfully!")
     return redirect('checkout:order_success', order_number=order.order_number)
+
 
 @login_required
 def order_success(request, order_number):
@@ -115,7 +167,6 @@ def my_orders(request):
 @login_required
 def track_order(request, order_number):
     order = get_object_or_404(Order, order_number=order_number, user=request.user)
-    
     try:
         tracking = order.tracking
     except DeliveryTracking.DoesNotExist:
@@ -135,7 +186,22 @@ def company_registration(request):
         form = CompanyRegistrationForm(request.POST, request.FILES)
         if form.is_valid():
             company = form.save()
-            messages.success(request, f"Thank you! Your company '{company.name}' has been registered. We will review your application soon.")
+            
+            # Send confirmation to company
+            try:
+                html_message = render_to_string('checkout/email/company_registration.html', {'company': company})
+                email = EmailMessage(
+                    subject=f'Application Received - {company.name}',
+                    body=html_message,
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    to=[company.contact_email],
+                )
+                email.content_subtype = 'html'
+                email.send(fail_silently=True)
+            except Exception as e:
+                print(f"Company email failed: {e}")
+
+            messages.success(request, f"Thank you! Your company '{company.name}' has been registered.")
             return redirect('checkout:company_registration_success')
     else:
         form = CompanyRegistrationForm()
@@ -145,4 +211,3 @@ def company_registration(request):
 
 def company_registration_success(request):
     return render(request, 'checkout/company_registration_success.html')
-
