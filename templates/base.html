@@ -16,10 +16,20 @@
             <a href="/" class="nav-logo">
                 <img src="{% static 'images/image41.png' %}" alt="smartSME Logo" height="40">
             </a>
+
             <ul class="nav-links">
                 <li><a href="/">Home</a></li>
-                <li><a href="{% url 'accounts:login' %}">Login</a></li>
-                <li><a href="{% url 'accounts:register' %}">Register</a></li>
+
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'dashboard:buyer_dashboard' %}">Marketplace</a></li>
+                    <li><a href="{% url 'checkout:my_orders' %}">My Orders</a></li>
+                    <li><a href="{% url 'dashboard:view_cart' %}">Cart</a></li>
+                    <li class="nav-user">Hi, {{ user.username }}</li>
+                    <li><a href="{% url 'accounts:logout' %}" class="nav-logout">Logout</a></li>
+                {% else %}
+                    <li><a href="{% url 'accounts:login' %}">Login</a></li>
+                    <li><a href="{% url 'accounts:register' %}">Register</a></li>
+                {% endif %}
             </ul>
         </div>
     </nav>
@@ -45,8 +55,13 @@
                     <h4>QUICK LINKS</h4>
                     <ul>
                         <li><a href="/">Home</a></li>
-                        <li><a href="{% url 'accounts:login' %}">Login</a></li>
-                        <li><a href="{% url 'accounts:register' %}">Register</a></li>
+                        {% if user.is_authenticated %}
+                            <li><a href="{% url 'dashboard:buyer_dashboard' %}">Marketplace</a></li>
+                            <li><a href="{% url 'checkout:my_orders' %}">My Orders</a></li>
+                        {% else %}
+                            <li><a href="{% url 'accounts:login' %}">Login</a></li>
+                            <li><a href="{% url 'accounts:register' %}">Register</a></li>
+                        {% endif %}
                     </ul>
                 </div>
 

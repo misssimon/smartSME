@@ -46,6 +46,7 @@ body {
     gap: 28px;
     margin: 0;
     padding: 0;
+    align-items: center;
 }
 
 .nav-links li {
@@ -62,6 +63,25 @@ body {
 
 .nav-links a:hover {
     color: #8B4513;
+}
+
+/* Smart navbar extras */
+.nav-user {
+    color: #8B4513;
+    font-weight: 600;
+    padding: 0 5px;
+}
+
+.nav-logout {
+    background: #8B4513;
+    color: white !important;
+    padding: 6px 14px !important;
+    border-radius: 6px;
+}
+
+.nav-logout:hover {
+    background: #5c2e0b !important;
+    color: white !important;
 }
 
 /* ========== FOOTER ========== */
