@@ -13,6 +13,7 @@ urlpatterns = [
 
     # Buyer URLs
     path('buyer/', views.buyer_dashboard, name='buyer_dashboard'),
+    path('buyer/home/', views.buyer_home, name='buyer_home'),          # ← NEW
     path('buyer/product/<int:pk>/', views.product_detail, name='product_detail'),
     path('buyer/add-to-cart/<int:pk>/', views.add_to_cart, name='add_to_cart'),
     path('buyer/cart/', views.view_cart, name='view_cart'),

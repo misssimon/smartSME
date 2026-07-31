@@ -94,10 +94,10 @@ def login_view(request):
                 if profile.role == 'farmer':
                     return redirect('dashboard:farmer_dashboard')
                 else:
-                    return redirect('dashboard:buyer_dashboard')
+                    return redirect('dashboard:buyer_home')   # ← changed
             except Profile.DoesNotExist:
                 Profile.objects.create(user=user, role='institutional_buyer')
-                return redirect('dashboard:buyer_dashboard')
+                return redirect('dashboard:buyer_home')       # ← changed
     else:
         form = LoginForm()
 
@@ -118,10 +118,10 @@ def home(request):
         if profile.role == 'farmer':
             return redirect('dashboard:farmer_dashboard')
         else:
-            return redirect('dashboard:buyer_dashboard')
+            return redirect('dashboard:buyer_home')          # ← changed
     except Profile.DoesNotExist:
         Profile.objects.create(user=request.user, role='institutional_buyer')
-        return redirect('dashboard:buyer_dashboard')
+        return redirect('dashboard:buyer_home')              # ← changed
 
 
 @login_required

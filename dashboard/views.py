@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q
 from .models import FarmerProfile, Product, Cart, CartItem
+from checkout.models import Order   # ← added for buyer_home
 
 
 # ==================== FARMER DASHBOARD ====================
@@ -30,7 +31,6 @@ def farmer_dashboard(request):
 def add_product(request):
     """Farmer adds a new product with multiple sub-images"""
     if request.method == 'POST':
-        # Create the main product
         product = Product(
             farmer=request.user,
             name=request.POST.get('name'),
@@ -44,15 +44,13 @@ def add_product(request):
             expiry_date=request.POST.get('expiry_date') or None,
         )
         
-        # Save main image
         if 'image' in request.FILES:
             product.image = request.FILES['image']
         
         product.save()
 
-        # Save multiple sub-images
         sub_images = request.FILES.getlist('sub_images')
-        for img in sub_images[:5]:  # Limit to 5 sub-images
+        for img in sub_images[:5]:
             from .models import ProductImage
             ProductImage.objects.create(product=product, image=img)
 
@@ -60,6 +58,7 @@ def add_product(request):
         return redirect('dashboard:farmer_dashboard')
    
     return render(request, 'dashboard/add_product.html')
+
 
 @login_required
 def edit_product(request, pk):
@@ -115,14 +114,28 @@ def farmer_profile(request):
     return render(request, 'dashboard/farmer_profile.html', {'profile': profile})
 
 
-# ==================== INSTITUTIONAL BUYER DASHBOARD ====================
+# ==================== INSTITUTIONAL BUYER ====================
+
+@login_required
+def buyer_home(request):
+    """Institutional buyer dashboard (home page after login)"""
+    recent_orders = Order.objects.filter(user=request.user).order_by('-created_at')[:5]
+    total_orders = Order.objects.filter(user=request.user).count()
+    pending_orders = Order.objects.filter(user=request.user, status='pending').count()
+
+    context = {
+        'recent_orders': recent_orders,
+        'total_orders': total_orders,
+        'pending_orders': pending_orders,
+    }
+    return render(request, 'dashboard/buyer_home.html', context)
+
 
 @login_required
 def buyer_dashboard(request):
     """Main buyer marketplace"""
     products = Product.objects.filter(is_available=True).select_related('farmer')
     
-    # Search
     search = request.GET.get('search')
     if search:
         products = products.filter(
@@ -131,12 +144,10 @@ def buyer_dashboard(request):
             Q(farmer__username__icontains=search)
         )
     
-    # Filter by unit
     unit = request.GET.get('unit')
     if unit:
         products = products.filter(unit=unit)
     
-        # Get cart count for badge
     try:
         cart = request.user.cart
         cart_count = cart.total_items
