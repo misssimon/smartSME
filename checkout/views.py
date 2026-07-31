@@ -8,7 +8,7 @@ from django.conf import settings
 from decimal import Decimal
 from dashboard.models import Cart
 from .models import (
-    Order, OrderItem, DeliveryOption, DeliveryPerson, 
+    Order, OrderItem, DeliveryOption, DeliveryPerson,
     DeliveryCompany, DeliveryTracking
 )
 from .forms import CompanyRegistrationForm
@@ -166,7 +166,14 @@ def my_orders(request):
 
 @login_required
 def track_order(request, order_number):
-    order = get_object_or_404(Order, order_number=order_number, user=request.user)
+    order_number = order_number.strip()
+
+    try:
+        order = Order.objects.get(order_number=order_number, user=request.user)
+    except Order.DoesNotExist:
+        messages.error(request, f"Order #{order_number} was not found or does not belong to you.")
+        return redirect('checkout:my_orders')
+
     try:
         tracking = order.tracking
     except DeliveryTracking.DoesNotExist:
