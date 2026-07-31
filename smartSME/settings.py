@@ -1,30 +1,25 @@
 """
-Django settings for smartSME project - LOCAL DEVELOPMENT CONFIG
+Django settings for smartSME project
 """
 from pathlib import Path
 import os
+import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-#)xw42($8*e*egi!)ecw&kck!pr8odfj@czmnligr#fka60+vq'
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']   # Safe for local development
+ALLOWED_HOSTS = ['*']
 
 # =============================================================================
-# ALLAUTH CONFIGURATION (Important!)
+# ALLAUTH CONFIGURATION
 # =============================================================================
-
-# Disable allauth's default account pages so your custom views take priority
 ACCOUNT_LOGIN_ON_PASSWORD_RESET = False
 ACCOUNT_LOGOUT_REDIRECT_URL = '/accounts/login/'
-ACCOUNT_LOGIN_REDIRECT_URL = '/'   # or 'dashboard:home' later
-
-# Tell allauth to use your custom login/signup URLs
-LOGIN_REDIRECT_URL = '/'                    # After successful login
-LOGOUT_REDIRECT_URL = '/accounts/login/'    # After logout
-
-# Optional: Make allauth not override your templates completely
+ACCOUNT_LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/accounts/login/'
 ACCOUNT_TEMPLATE_REDIRECT = None
 
 INSTALLED_APPS = [
@@ -33,7 +28,9 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'cloudinary_storage',          # must be before staticfiles
     'django.contrib.staticfiles',
+    'cloudinary',
     'django.contrib.sites',
 
     # Third-party
@@ -85,17 +82,8 @@ TEMPLATES = [
 WSGI_APPLICATION = 'smartSME.wsgi.application'
 
 # =============================================================================
-# DATABASE - LOCAL SQLITE (Development)
+# DATABASE
 # =============================================================================
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.sqlite3',
-#        'NAME': BASE_DIR / 'db.sqlite3',
-#    }
-#}
-
-# Production database (commented out)
-import dj_database_url
 DATABASES = {
     'default': dj_database_url.config(default='sqlite:///db.sqlite3')
 }
@@ -128,11 +116,23 @@ MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # =============================================================================
-# EMAIL - LOCAL DEVELOPMENT
+# CLOUDINARY (Permanent image storage)
 # =============================================================================
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'   # Prints emails in terminal
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
 
-# Production Email (Gmail) - Commented Out
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'ccy7u4d7',
+    'API_KEY': '595136179624781',
+    'API_SECRET': 'd6gE73PoOd3diMDdajIjwux134w',
+}
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+# =============================================================================
+# EMAIL
+# =============================================================================
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
@@ -163,8 +163,6 @@ OTP_WEBAUTHN_RP_NAME = 'smartSME'
 
 OTP_WEBAUTHN_ALLOWED_ORIGINS = [
     'https://smartsme.onrender.com',
-    'https://127.0.0.1:8000',
 ]
 
-# Allow HTTP for local development (important!)
-OTP_WEBAUTHN_ALLOW_HTTP = False
+OTP_WEBAUTHN_ALLOW_HTTP = True

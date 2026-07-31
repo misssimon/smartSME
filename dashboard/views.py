@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q
 from .models import FarmerProfile, Product, Cart, CartItem
-from checkout.models import Order   # ← added for buyer_home
+from checkout.models import Order
 
 
 # ==================== FARMER DASHBOARD ====================
@@ -14,7 +14,7 @@ def farmer_dashboard(request):
     if not hasattr(request.user, 'farmer_profile'):
         FarmerProfile.objects.create(user=request.user)
     
-    my_products = Product.objects.filter(farmer=request.user)
+    my_products = Product.objects.filter(farmer=request.user, is_available=True)
     total_products = my_products.count()
     low_stock = my_products.filter(quantity_in_stock__lt=10).count()
     
@@ -88,8 +88,13 @@ def edit_product(request, pk):
 @login_required
 def delete_product(request, pk):
     product = get_object_or_404(Product, pk=pk, farmer=request.user)
-    product.delete()
-    messages.success(request, 'Product deleted successfully.')
+
+    # Soft delete: hide from marketplace instead of real delete
+    # (protects past orders that reference this product)
+    product.is_available = False
+    product.save()
+
+    messages.success(request, f'Product "{product.name}" has been removed from the marketplace.')
     return redirect('dashboard:farmer_dashboard')
 
 
