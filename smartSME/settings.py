@@ -115,6 +115,9 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Needed by older django-cloudinary-storage during collectstatic
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+
 # =============================================================================
 # CLOUDINARY (Permanent image storage)
 # =============================================================================
@@ -128,7 +131,6 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': 'd6gE73PoOd3diMDdajIjwux134w',
 }
 
-# Django 4.2+ / 5 / 6 storage config
 STORAGES = {
     "default": {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
