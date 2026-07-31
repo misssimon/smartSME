@@ -128,7 +128,28 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': 'd6gE73PoOd3diMDdajIjwux134w',
 }
 
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+# =============================================================================
+# CLOUDINARY (Permanent image storage)
+# =============================================================================
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'ccy7u4d7',
+    'API_KEY': '595136179624781',
+    'API_SECRET': 'd6gE73PoOd3diMDdajIjwux134w',
+}
+
+# Django 4.2+ / 5 / 6 style storage
+STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+    },
+}
 
 # =============================================================================
 # EMAIL
