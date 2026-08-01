@@ -18,8 +18,8 @@ body {
 
 /* ========== NAVBAR ========== */
 .navbar {
-    background-color: #ffffff;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    background-color: #87CEEB;   /* Sky blue */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
     padding: 12px 0;
     position: sticky;
     top: 0;
@@ -55,32 +55,32 @@ body {
 
 .nav-links a {
     text-decoration: none;
-    color: #333;
+    color: #1a3a4a;
     font-weight: 600;
     font-size: 15px;
     transition: color 0.2s;
 }
 
 .nav-links a:hover {
-    color: #8B4513;
+    color: #0d47a1;
 }
 
 /* Smart navbar extras */
 .nav-user {
-    color: #8B4513;
+    color: #0d47a1;
     font-weight: 600;
     padding: 0 5px;
 }
 
 .nav-logout {
-    background: #8B4513;
+    background: #0d47a1;
     color: white !important;
     padding: 6px 14px !important;
     border-radius: 6px;
 }
 
 .nav-logout:hover {
-    background: #5c2e0b !important;
+    background: #08306b !important;
     color: white !important;
 }
 
